@@ -176,6 +176,7 @@ export class MemStorage implements IStorage {
       ...insertPost,
       id,
       publishedAt: new Date(),
+      featured: insertPost.featured ?? false,
     };
     this.blogPosts.set(id, post);
     return post;
@@ -187,6 +188,7 @@ export class MemStorage implements IStorage {
       ...insertContact,
       id,
       createdAt: new Date(),
+      phone: insertContact.phone ?? null,
     };
     this.contacts.set(id, contact);
     console.log('New contact received:', contact);

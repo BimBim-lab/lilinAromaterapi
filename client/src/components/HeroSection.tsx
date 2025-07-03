@@ -10,13 +10,13 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-soft-pink to-rose-gold min-h-screen flex items-center">
+    <section className="relative bg-gradient-to-br from-soft-pink to-rose-gold min-h-screen flex items-center pt-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left animate-fade-in-up">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-charcoal mb-6 leading-tight">
               Workshop Lilin Aromaterapi oleh 
-              <span className="text-rose-gold"> WeisCandle</span>
+              <span className="text-white"> WeisCandle</span>
             </h1>
             <p className="text-xl md:text-2xl text-charcoal mb-8 opacity-90">
               Pelajari seni membuat lilin aromaterapi yang menenangkan dengan teknik profesional dan bahan berkualitas tinggi.
@@ -46,8 +46,8 @@ export default function HeroSection() {
           </div>
           <div className="relative animate-fade-in-up">
             <img 
-              src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
-              alt="Aromatherapy candle making workshop setup" 
+              src="https://images.unsplash.com/photo-1602874801007-b1d16ba8b5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+              alt="Beautiful scented aromatherapy candles" 
               className="rounded-2xl shadow-2xl w-full hover-scale" 
             />
             <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg animate-float">
