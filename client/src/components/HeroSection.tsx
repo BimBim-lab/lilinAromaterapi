@@ -10,7 +10,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-soft-pink to-rose-gold min-h-screen flex items-center pt-16">
+    <section className="relative bg-gradient-to-br from-soft-pink to-rose-gold min-h-screen flex items-center pt-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left animate-fade-in-up">
