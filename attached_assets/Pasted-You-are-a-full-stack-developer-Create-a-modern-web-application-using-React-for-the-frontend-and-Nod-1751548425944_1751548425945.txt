@@ -1,0 +1,51 @@
+You are a full-stack developer. Create a modern web application using React for the frontend and Node.js (Express) for the backend. The app will be deployed to the domain **lilinaromaterapi.com** and serve as the online presence for the brand **WeisCandle** (Google Maps: https://g.co/kgs/cKAi1pU). 
+
+Requirements:
+
+1. **Tech Stack**  
+   - Frontend: React (create-react-app or Vite), React Router for routing, Tailwind CSS for styling.  
+   - Backend: Node.js with Express, serve RESTful APIs, CORS enabled.  
+   - Integrate with a simple JSON‑file or in-memory data store (you can stub database logic).  
+   - Use environment variables for configuration (PORT, API_URL).
+
+2. **Pages & Routes**  
+   - **Home (/)**  
+     - Hero section: headline “Workshop Lilin Aromaterapi oleh WeisCandle” + CTA button “Daftar Sekarang”.  
+     - Section “Apa itu Workshop” dengan 3 poin manfaat.  
+     - Section “Jadwal & Harga” (tabel atau cards).  
+     - Testimoni peserta (carousel).  
+     - Footer dengan link ke semua halaman dan Google Maps embed dari https://g.co/kgs/cKAi1pU.
+
+   - **About Us (/about)**  
+     - Cerita singkat brand WeisCandle, visi misi, tim.
+
+   - **Workshop Details (/workshop)**  
+     - Detail silabus workshop, durasi, materi, instruktur.
+
+   - **Blog (/blog)**  
+     - List artikel (judul + tanggal + excerpt).  
+     - Halaman detail artikel (/blog/:slug).
+
+   - **Contact (/contact)**  
+     - Form kontak (nama, email, pesan) yang mengirim POST ke `/api/contact`.  
+     - Peta lokasi embed Google Maps.
+
+   - **404 Page**  
+     - Pesan “Halaman tidak ditemukan” + link kembali ke Home.
+
+3. **API Endpoints**  
+   - `GET /api/blog` → daftar artikel.  
+   - `GET /api/blog/:slug` → detail artikel.  
+   - `POST /api/contact` → terima data kontak dan log ke console.
+
+4. **Styling & UX**  
+   - Gunakan desain minimalis, font bersih, warna brand : soft pink (#F8E1E7) & charcoal (#333).  
+   - Responsif: mobile-first.  
+   - Animasi halus pada hover button dan transisi halaman.
+
+5. **Setup & Deployment**  
+   - Sediakan script `npm run dev` untuk development (frontend & backend concurrently).  
+   - Sediakan script `npm run build` & `npm start` untuk production.  
+   - README.md: instruksi install, env vars, cara deploy ke Replit.
+
+Generate full folder structure, package.json, contoh komponen React, Express server boilerplate, dan komentar singkat di setiap file. Fokuskan homepage sebagai **sales page workshop lilin aromaterapi** milik WeisCandle dengan CTA yang jelas.
