@@ -46,8 +46,8 @@ export default function HeroSection() {
           </div>
           <div className="relative animate-fade-in-up">
             <img 
-              src="https://images.unsplash.com/photo-1602874801007-b1d16ba8b5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-              alt="Beautiful scented aromatherapy candles" 
+              src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+              alt="Aromatherapy candle making workshop setup" 
               className="rounded-2xl shadow-2xl w-full hover-scale" 
             />
             <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg animate-float">

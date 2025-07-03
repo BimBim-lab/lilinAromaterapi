@@ -43,8 +43,8 @@ export default function About() {
           </div>
           <div className="animate-fade-in-up">
             <img 
-              src="https://images.unsplash.com/photo-1602874801007-b1d16ba8b5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-              alt="Beautiful scented aromatherapy candles collection" 
+              src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+              alt="WeisCandle workshop studio interior" 
               className="rounded-2xl shadow-lg w-full hover-scale" 
             />
           </div>
