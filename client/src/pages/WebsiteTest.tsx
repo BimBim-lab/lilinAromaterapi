@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,19 +5,19 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
 export default function WebsiteTest() {
-  const { data: testimonials, refetch: refetchTestimonials } = useQuery({
-    queryKey: ["/api/testimonials"],
+  const { data: workshops, refetch: refetchWorkshops } = useQuery({
+    queryKey: ["/api/workshop-packages"],
     queryFn: async () => {
-      const response = await fetch("/api/testimonials");
+      const response = await fetch("/api/workshop-packages");
       if (!response.ok) throw new Error('Failed to fetch');
       return response.json();
     },
   });
 
-  const { data: workshopPackages, refetch: refetchWorkshops } = useQuery({
-    queryKey: ["/api/workshop-packages"],
+  const { data: testimonials, refetch: refetchTestimonials } = useQuery({
+    queryKey: ["/api/testimonials"],
     queryFn: async () => {
-      const response = await fetch("/api/workshop-packages");
+      const response = await fetch("/api/testimonials");
       if (!response.ok) throw new Error('Failed to fetch');
       return response.json();
     },
@@ -92,7 +91,7 @@ export default function WebsiteTest() {
             Refresh All Data
           </Button>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Testimonials */}
           <Card>

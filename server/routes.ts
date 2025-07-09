@@ -167,6 +167,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public testimonials endpoint
+  app.get("/api/testimonials", async (req, res) => {
+    try {
+      const testimonials = await storage.getTestimonials();
+      res.json(testimonials);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch testimonials" });
+    }
+  });
+
+  // Public team members endpoint
+  app.get("/api/team", async (req, res) => {
+    try {
+      const team = await storage.getTeamMembers();
+      // Only return active team members for public API
+      const activeTeam = team.filter(member => member.isActive);
+      res.json(activeTeam);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team members" });
+    }
+  });
+
+  // Public export categories endpoint
+  app.get("/api/export-categories", async (req, res) => {
+    try {
+      const categories = await storage.getExportCategories();
+      // Only return active categories for public API
+      const activeCategories = categories.filter(category => category.isActive);
+      res.json(activeCategories);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch export categories" });
+    }
+  });
+
   // Admin routes (protected)
   app.get("/api/admin/contacts", authenticateToken, async (req, res) => {
     try {
