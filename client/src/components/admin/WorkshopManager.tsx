@@ -45,7 +45,7 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch("${API}/api/admin/workshop-packages", {
+      const response = await fetch(`${API}/api/admin/workshop-packages`, {
         headers,
       });
       if (!response.ok) throw new Error("Failed to fetch packages");
@@ -60,7 +60,7 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch("${API}/api/admin/workshop-packages", {
+      const response = await fetch(`${API}/api/admin/workshop-packages`, {
         method: "POST",
         headers,
         body: JSON.stringify(data),

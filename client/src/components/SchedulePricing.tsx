@@ -7,7 +7,7 @@ export default function SchedulePricing() {
   const { data: apiPackages, isLoading } = useQuery({
     queryKey: ["/api/workshop-packages"],
     queryFn: async () => {
-      const response = await fetch("${API}/api/admin/workshop-packages");
+      const response = await fetch(`${API}/api/admin/workshop-packages`);
       if (!response.ok) throw new Error("Failed to fetch packages");
       return response.json();
     },
