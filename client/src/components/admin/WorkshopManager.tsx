@@ -30,7 +30,7 @@ import type { WorkshopPackage, InsertWorkshopPackage } from "@shared/schema";
 interface WorkshopManagerProps {
   token: string | null;
 }
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_BASE_URL;
 export default function WorkshopManager({ token }: WorkshopManagerProps) {
   const [selectedPackage, setSelectedPackage] = useState<WorkshopPackage | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
