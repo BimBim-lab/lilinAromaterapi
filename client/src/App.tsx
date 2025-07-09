@@ -1,3 +1,4 @@
+
 import { Router, Route, Switch } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -48,3 +49,5 @@ function App() {
     </QueryClientProvider>
   );
 }
+
+export default App;
