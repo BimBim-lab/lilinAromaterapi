@@ -112,9 +112,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/blog", async (req, res) => {
     try {
       const posts = await storage.getBlogPosts();
+      console.log(`[Blog API] Successfully fetched ${posts.length} blog posts`);
       res.json(posts);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch blog posts" });
+      console.error("[Blog API] Error fetching blog posts:", error);
+      res.status(500).json({ 
+        message: "Failed to fetch blog posts",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
