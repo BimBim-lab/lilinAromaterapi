@@ -1,4 +1,4 @@
-Adding a public endpoint to retrieve active workshop packages.
+import type { Express } from "express";
 ```
 ```replit_final_file
 import type { Express } from "express";
