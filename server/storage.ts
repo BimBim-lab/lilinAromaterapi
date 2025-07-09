@@ -182,6 +182,28 @@ export class MemStorage implements IStorage {
     return post;
   }
 
+  async updateBlogPost(id: number, insertPost: InsertBlogPost): Promise<BlogPost> {
+    const existingPost = this.blogPosts.get(id);
+    if (!existingPost) {
+      throw new Error('Blog post not found');
+    }
+    
+    const updatedPost: BlogPost = {
+      ...existingPost,
+      ...insertPost,
+      id,
+    };
+    this.blogPosts.set(id, updatedPost);
+    return updatedPost;
+  }
+
+  async deleteBlogPost(id: number): Promise<void> {
+    if (!this.blogPosts.has(id)) {
+      throw new Error('Blog post not found');
+    }
+    this.blogPosts.delete(id);
+  }
+
   async createContact(insertContact: InsertContact): Promise<Contact> {
     const id = this.currentContactId++;
     const contact: Contact = {

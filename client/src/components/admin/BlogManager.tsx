@@ -48,9 +48,14 @@ export default function BlogManager({ token }: BlogManagerProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertBlogPost) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/admin/blog", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create post");
@@ -66,9 +71,14 @@ export default function BlogManager({ token }: BlogManagerProps) {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InsertBlogPost }) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/blog/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update post");
@@ -84,8 +94,14 @@ export default function BlogManager({ token }: BlogManagerProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/blog/${id}`, {
         method: "DELETE",
+        headers,
       });
       if (!response.ok) throw new Error("Failed to delete post");
       return response.json();
