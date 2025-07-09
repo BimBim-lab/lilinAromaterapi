@@ -194,6 +194,119 @@ export class MemStorage implements IStorage {
     console.log('New contact received:', contact);
     return contact;
   }
+
+  async getContacts(): Promise<Contact[]> {
+    return Array.from(this.contacts.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async initializeDatabase(): Promise<void> {
+    // Initialize default admin user
+    const adminExists = await this.getUserByUsername('admin');
+    if (!adminExists) {
+      const bcrypt = await import('bcryptjs');
+      const hashedPassword = await bcrypt.hash('password', 10);
+      await this.createUser({
+        username: 'admin',
+        password: hashedPassword
+      });
+      console.log('Default admin user created: admin/password');
+    }
+  }
+
+  // Methods for other entities that the admin dashboard needs
+  async getTestimonials(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async getWorkshopPackages(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async getTeamMembers(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async getExportCategories(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async getSiteSettings(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async getPromoPopups(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async getActivePromos(): Promise<any[]> {
+    return []; // Empty for now, can be extended
+  }
+
+  async createTestimonial(data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async updateTestimonial(id: number, data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async deleteTestimonial(id: number): Promise<void> {
+    // Placeholder
+  }
+
+  async createWorkshopPackage(data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async updateWorkshopPackage(id: number, data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async deleteWorkshopPackage(id: number): Promise<void> {
+    // Placeholder
+  }
+
+  async createTeamMember(data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async updateTeamMember(id: number, data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async deleteTeamMember(id: number): Promise<void> {
+    // Placeholder
+  }
+
+  async setSiteSetting(data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async createPromoPopup(data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async updatePromoPopup(id: number, data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async deletePromoPopup(id: number): Promise<void> {
+    // Placeholder
+  }
+
+  async createExportCategory(data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async updateExportCategory(id: number, data: any): Promise<any> {
+    return data; // Placeholder
+  }
+
+  async deleteExportCategory(id: number): Promise<void> {
+    // Placeholder
+  }
 }
 
 export const storage = new MemStorage();
