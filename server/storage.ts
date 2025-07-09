@@ -52,6 +52,8 @@ export class MemStorage implements IStorage {
 
     // Initialize with sample blog posts
     this.initializeBlogPosts();
+    // Initialize with sample workshop packages
+    this.initializeWorkshopPackages();
   }
 
   private initializeBlogPosts() {
@@ -161,6 +163,62 @@ export class MemStorage implements IStorage {
     ];
 
     samplePosts.forEach(post => this.createBlogPost(post));
+  }
+
+  private initializeWorkshopPackages() {
+    const samplePackages = [
+      {
+        name: "Basic Workshop",
+        price: 350000,
+        duration: "3 jam",
+        description: "Workshop dasar pembuatan lilin aromaterapi untuk pemula",
+        features: JSON.stringify([
+          "2 lilin aromaterapi hasil karya sendiri",
+          "Panduan dasar pembuatan lilin",
+          "Essential oil blend sederhana",
+          "Sertifikat keikutsertaan"
+        ]),
+        maxParticipants: 15,
+        isActive: true,
+      },
+      {
+        name: "Premium Workshop",
+        price: 650000,
+        duration: "5 jam",
+        description: "Workshop lanjutan dengan teknik advanced blending",
+        features: JSON.stringify([
+          "4 lilin aromaterapi hasil karya sendiri",
+          "Panduan lengkap teknik pembuatan lilin",
+          "Advanced essential oil blending",
+          "Starter kit dasar",
+          "Konsultasi lanjutan 1 bulan",
+          "Sertifikat keikutsertaan"
+        ]),
+        maxParticipants: 12,
+        isActive: true,
+      },
+      {
+        name: "Professional Workshop",
+        price: 1200000,
+        duration: "8 jam (2 hari)",
+        description: "Workshop profesional dengan business planning lengkap",
+        features: JSON.stringify([
+          "6 lilin aromaterapi hasil karya sendiri",
+          "Panduan lengkap teknik pembuatan lilin",
+          "Advanced essential oil blending",
+          "Complete starter kit",
+          "Template business plan",
+          "Marketing strategy guide",
+          "Konsultasi bisnis 3 bulan",
+          "Akses komunitas online eksklusif",
+          "Sertifikat keikutsertaan resmi"
+        ]),
+        maxParticipants: 8,
+        isActive: true,
+      }
+    ];
+
+    samplePackages.forEach(pkg => this.createWorkshopPackage(pkg));
   }
 
   async getUser(id: number): Promise<User | undefined> {

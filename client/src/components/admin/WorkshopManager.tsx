@@ -40,7 +40,14 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
   const { data: packages, isLoading } = useQuery({
     queryKey: ["/api/admin/workshop-packages"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/workshop-packages");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/admin/workshop-packages", {
+        headers,
+      });
       if (!response.ok) throw new Error("Failed to fetch packages");
       return response.json();
     },
