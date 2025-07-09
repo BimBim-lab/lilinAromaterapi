@@ -1,11 +1,34 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import type { WorkshopPackage } from "@shared/schema";
 
 export default function Workshop() {
   useEffect(() => {
     document.title = "Detail Workshop Lilin Aromaterapi - WeisCandle";
   }, []);
+
+  const { data: packages, isLoading } = useQuery({
+    queryKey: ["/api/workshop-packages"],
+    queryFn: async () => {
+      const response = await fetch("/api/workshop-packages");
+      if (!response.ok) throw new Error("Failed to fetch packages");
+      return response.json();
+    },
+  });
+
+  const formatPrice = (price: number) => {
+    return `Rp ${price.toLocaleString('id-ID')}`;
+  };
+
+  const parseFeatures = (features: string) => {
+    try {
+      return JSON.parse(features);
+    } catch {
+      return [];
+    }
+  };
 
   return (
     <div className="min-h-screen py-16">
@@ -184,37 +207,73 @@ export default function Workshop() {
             Pilih Paket Workshop yang Sesuai
           </h2>
           
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-2xl shadow-lg overflow-hidden">
-              <thead className="bg-rose-gold text-white">
-                <tr>
-                  <th className="p-4 text-left">Fitur</th>
-                  <th className="p-4 text-center">Basic</th>
-                  <th className="p-4 text-center">Premium</th>
-                  <th className="p-4 text-center">Professional</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { feature: "Durasi Workshop", basic: "3 jam", premium: "5 jam", pro: "8 jam (2 hari)" },
-                  { feature: "Jumlah Lilin", basic: "2 lilin", premium: "4 lilin", pro: "6 lilin" },
-                  { feature: "Materi Dasar", basic: "✓", premium: "✓", pro: "✓" },
-                  { feature: "Advanced Blending", basic: "✗", premium: "✓", pro: "✓" },
-                  { feature: "Business Planning", basic: "✗", premium: "✗", pro: "✓" },
-                  { feature: "Starter Kit", basic: "✗", premium: "✓", pro: "Complete Kit" },
-                  { feature: "Konsultasi Lanjutan", basic: "✗", premium: "1 bulan", pro: "3 bulan" },
-                  { feature: "Harga", basic: "Rp 350.000", premium: "Rp 550.000", pro: "Rp 750.000" }
-                ].map((row, index) => (
-                  <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                    <td className="p-4 font-medium text-charcoal">{row.feature}</td>
-                    <td className="p-4 text-center">{row.basic}</td>
-                    <td className="p-4 text-center">{row.premium}</td>
-                    <td className="p-4 text-center">{row.pro}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {isLoading ? (
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-gold mx-auto"></div>
+              <p className="mt-4 text-gray-600">Memuat paket workshop...</p>
+            </div>
+          ) : packages && packages.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {packages.map((pkg: WorkshopPackage, index: number) => {
+                const features = parseFeatures(pkg.features);
+                const isPopular = index === 1; // Middle package is popular
+                
+                return (
+                  <div 
+                    key={pkg.id}
+                    className={`bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${
+                      isPopular ? 'border-2 border-rose-gold' : ''
+                    }`}
+                  >
+                    {isPopular && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-rose-gold text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        Paling Populer
+                      </div>
+                    )}
+                    
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-semibold text-charcoal mb-2">{pkg.name}</h3>
+                      <p className="text-gray-600 mb-4">{pkg.description}</p>
+                      <div className="text-3xl font-bold text-rose-gold mb-2">{formatPrice(pkg.price)}</div>
+                      <p className="text-sm text-gray-500">per orang</p>
+                      <p className="text-sm text-gray-600 mt-2">Durasi: {pkg.duration}</p>
+                      <p className="text-sm text-gray-600">Max: {pkg.maxParticipants} peserta</p>
+                    </div>
+                    
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-charcoal mb-3">Yang Akan Anda Dapatkan:</h4>
+                      <ul className="space-y-2">
+                        {features.map((feature: string, featureIndex: number) => (
+                          <li key={featureIndex} className="flex items-start">
+                            <svg className="w-4 h-4 text-green-500 mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-sm text-gray-600">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <Link href="/contact">
+                      <Button 
+                        className={`w-full py-3 font-semibold transition-all duration-300 rounded-full ${
+                          isPopular 
+                            ? 'bg-rose-gold text-white hover:bg-charcoal' 
+                            : 'bg-soft-pink text-charcoal hover:bg-rose-gold hover:text-white'
+                        }`}
+                      >
+                        Daftar Sekarang
+                      </Button>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-600">Belum ada paket workshop tersedia.</p>
+            </div>
+          )}
         </div>
 
         {/* CTA Section */}

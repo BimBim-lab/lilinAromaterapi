@@ -1,3 +1,6 @@
+Adding a public endpoint to retrieve active workshop packages.
+```
+```replit_final_file
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -35,26 +38,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/login", async (req, res) => {
     try {
       const { username, password } = req.body;
-      
+
       // Default admin credentials (you should change these)
       const ADMIN_USERNAME = "admin";
       const ADMIN_PASSWORD = "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi"; // password
-      
+
       if (username !== ADMIN_USERNAME) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      
+
       const isValidPassword = await bcrypt.compare(password, ADMIN_PASSWORD);
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      
+
       const token = jwt.sign(
         { username: ADMIN_USERNAME },
         JWT_SECRET,
         { expiresIn: '24h' }
       );
-      
+
       res.json({ token, message: "Login successful" });
     } catch (error) {
       res.status(500).json({ message: "Login failed" });
@@ -68,15 +71,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(testimonials);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch testimonials" });
-    }
-  });
-
-  app.get("/api/workshop-packages", async (req, res) => {
-    try {
-      const packages = await storage.getWorkshopPackages();
-      res.json(packages);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch workshop packages" });
     }
   });
 
@@ -130,11 +124,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { slug } = req.params;
       const post = await storage.getBlogPostBySlug(slug);
-      
+
       if (!post) {
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       res.json(post);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch blog post" });
@@ -146,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertContactSchema.parse(req.body);
       const contact = await storage.createContact(validatedData);
-      
+
       res.status(201).json({ 
         message: "Pesan berhasil dikirim! Kami akan menghubungi Anda segera.",
         contact: { id: contact.id }
@@ -158,8 +152,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: error.errors 
         });
       }
-      
+
       res.status(500).json({ message: "Gagal mengirim pesan" });
+    }
+  });
+
+  // Public workshop packages endpoint
+  app.get("/api/workshop-packages", async (req, res) => {
+    try {
+      const packages = await storage.getWorkshopPackages();
+      // Only return active packages for public API
+      const activePackages = packages.filter(pkg => pkg.isActive);
+      res.json(activePackages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch workshop packages" });
     }
   });
 
