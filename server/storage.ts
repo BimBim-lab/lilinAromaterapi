@@ -428,7 +428,7 @@ export class MemStorage implements IStorage {
     const post: BlogPost = {
       ...insertPost,
       id,
-      publishedAt: new Date(),
+      publishedAt: insertPost.publishedAt || new Date(),
       featured: insertPost.featured ?? false,
     };
     this.blogPosts.set(id, post);

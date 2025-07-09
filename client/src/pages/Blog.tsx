@@ -11,8 +11,10 @@ export default function Blog() {
     document.title = "Blog Aromaterapi - Tips & Artikel WeisCandle";
   }, []);
 
-  const { data: posts, isLoading, error } = useQuery<BlogPost[]>({
+  const { data: posts, isLoading, error, refetch } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog"],
+    retry: 3,
+    retryDelay: 1000,
   });
 
   const formatDate = (dateString: string | Date) => {
@@ -64,7 +66,13 @@ export default function Blog() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
               <h3 className="text-lg font-semibold text-red-800 mb-2">Gagal Memuat Artikel</h3>
-              <p className="text-red-600">Terjadi kesalahan saat memuat artikel blog. Silakan coba lagi nanti.</p>
+              <p className="text-red-600 mb-4">Terjadi kesalahan saat memuat artikel blog. Silakan coba lagi nanti.</p>
+              <Button 
+                onClick={() => refetch()} 
+                className="bg-rose-gold text-white hover:bg-charcoal"
+              >
+                Coba Lagi
+              </Button>
             </div>
           </div>
         )}

@@ -10,9 +10,11 @@ import type { BlogPost } from "@shared/schema";
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: post, isLoading, error } = useQuery<BlogPost>({
+  const { data: post, isLoading, error, refetch } = useQuery<BlogPost>({
     queryKey: [`/api/blog/${slug}`],
     enabled: !!slug,
+    retry: 3,
+    retryDelay: 1000,
   });
 
   const { data: allPosts } = useQuery<BlogPost[]>({
@@ -65,11 +67,19 @@ export default function BlogPostPage() {
               </svg>
               <h1 className="text-2xl font-bold text-red-800 mb-2">Artikel Tidak Ditemukan</h1>
               <p className="text-red-600 mb-6">Artikel yang Anda cari tidak dapat ditemukan atau telah dipindahkan.</p>
-              <Link href="/blog">
-                <Button className="bg-rose-gold text-white hover:bg-charcoal">
-                  Kembali ke Blog
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => refetch()} 
+                  className="bg-rose-gold text-white hover:bg-charcoal mr-2"
+                >
+                  Coba Lagi
                 </Button>
-              </Link>
+                <Link href="/blog">
+                  <Button variant="outline" className="border-rose-gold text-rose-gold hover:bg-rose-gold hover:text-white">
+                    Kembali ke Blog
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
