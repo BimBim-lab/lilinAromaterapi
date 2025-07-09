@@ -27,7 +27,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { BlogPost, InsertBlogPost } from "@shared/schema";
 
-export default function BlogManager() {
+interface BlogManagerProps {
+  token: string | null;
+}
+
+export default function BlogManager({ token }: BlogManagerProps) {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();

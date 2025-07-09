@@ -34,7 +34,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { PromoPopup, InsertPromoPopup } from "@shared/schema";
 
-export default function PromoManager() {
+interface PromoManagerProps {
+  token: string | null;
+}
+
+export default function PromoManager({ token }: PromoManagerProps) {
   const [selectedPromo, setSelectedPromo] = useState<PromoPopup | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();

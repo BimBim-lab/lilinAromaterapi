@@ -34,7 +34,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { Testimonial, InsertTestimonial } from "@shared/schema";
 
-export default function TestimonialManager() {
+interface TestimonialManagerProps {
+  token: string | null;
+}
+
+export default function TestimonialManager({ token }: TestimonialManagerProps) {
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();

@@ -27,7 +27,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { TeamMember, InsertTeamMember } from "@shared/schema";
 
-export default function TeamManager() {
+interface TeamManagerProps {
+  token: string | null;
+}
+
+export default function TeamManager({ token }: TeamManagerProps) {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();

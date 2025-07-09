@@ -27,7 +27,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { ExportCategory, InsertExportCategory } from "@shared/schema";
 
-export default function ExportManager() {
+interface ExportManagerProps {
+  token: string | null;
+}
+
+export default function ExportManager({ token }: ExportManagerProps) {
   const [selectedCategory, setSelectedCategory] = useState<ExportCategory | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();

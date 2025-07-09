@@ -27,7 +27,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { WorkshopPackage, InsertWorkshopPackage } from "@shared/schema";
 
-export default function WorkshopManager() {
+interface WorkshopManagerProps {
+  token: string | null;
+}
+
+export default function WorkshopManager({ token }: WorkshopManagerProps) {
   const [selectedPackage, setSelectedPackage] = useState<WorkshopPackage | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();

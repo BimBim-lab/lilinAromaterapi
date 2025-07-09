@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +13,8 @@ import {
 } from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { LogOut } from "lucide-react";
+import LoginForm from "@/components/admin/LoginForm";
 import BlogManager from "@/components/admin/BlogManager";
 import WorkshopManager from "@/components/admin/WorkshopManager";
 import TestimonialManager from "@/components/admin/TestimonialManager";
@@ -25,17 +26,56 @@ import ExportManager from "@/components/admin/ExportManager";
 export default function Admin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [token, setToken] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     document.title = "Admin Dashboard - WeisCandle";
+
+    // Check if user is already logged in
+    const savedToken = localStorage.getItem("admin_token");
+    if (savedToken) {
+      setToken(savedToken);
+      setIsAuthenticated(true);
+    }
   }, []);
 
-  // Fetch contacts
+  const handleLogin = (newToken: string) => {
+    setToken(newToken);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    setToken(null);
+    setIsAuthenticated(false);
+    queryClient.clear();
+    toast({
+      title: "Logout berhasil",
+      description: "Anda telah keluar dari dashboard admin",
+    });
+  };
+
+  // If not authenticated, show login form
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={handleLogin} />;
+  }
+
+  // Fetch contacts with authentication
   const { data: contacts, isLoading: contactsLoading } = useQuery({
     queryKey: ["/api/admin/contacts"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/contacts");
-      if (!response.ok) throw new Error("Failed to fetch contacts");
+      const response = await fetch("/api/admin/contacts", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          handleLogout();
+        }
+        throw new Error("Failed to fetch contacts");
+      }
       return response.json();
     },
   });
@@ -53,9 +93,19 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-charcoal mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Kelola semua aspek website WeisCandle</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-charcoal mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Kelola semua aspek website WeisCandle</p>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <LogOut size={16} />
+            Logout
+          </Button>
         </div>
 
         <Tabs defaultValue="contacts" className="space-y-6">
@@ -111,39 +161,33 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
-          {/* Blog Tab */}
+          {/* Other tabs remain the same */}
           <TabsContent value="blog">
-            <BlogManager />
+            <BlogManager token={token} />
           </TabsContent>
 
-          {/* Workshop Tab */}
           <TabsContent value="workshop">
-            <WorkshopManager />
+            <WorkshopManager token={token} />
           </TabsContent>
 
-          {/* Testimonials Tab */}
           <TabsContent value="testimonials">
-            <TestimonialManager />
+            <TestimonialManager token={token} />
           </TabsContent>
 
-          {/* Team Tab */}
           <TabsContent value="team">
-            <TeamManager />
+            <TeamManager token={token} />
           </TabsContent>
 
-          {/* Export Tab */}
           <TabsContent value="export">
-            <ExportManager />
+            <ExportManager token={token} />
           </TabsContent>
 
-          {/* Promos Tab */}
           <TabsContent value="promos">
-            <PromoManager />
+            <PromoManager token={token} />
           </TabsContent>
 
-          {/* Settings Tab */}
           <TabsContent value="settings">
-            <SettingsManager />
+            <SettingsManager token={token} />
           </TabsContent>
         </Tabs>
       </div>

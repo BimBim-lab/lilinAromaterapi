@@ -4,11 +4,63 @@ import { storage } from "./storage";
 import { 
   insertContactSchema, insertTestimonialSchema, insertWorkshopPackageSchema,
   insertTeamMemberSchema, insertSiteSettingSchema, insertPromoPopupSchema,
-  insertExportCategorySchema, insertBlogPostSchema 
+  insertExportCategorySchema, insertBlogPostSchema, insertUserSchema 
 } from "@shared/schema";
 import { z } from "zod";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-this-in-production";
+
+// Middleware to verify JWT token
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }
+    req.user = user;
+    next();
+  });
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication endpoints
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Default admin credentials (you should change these)
+      const ADMIN_USERNAME = "admin";
+      const ADMIN_PASSWORD = "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi"; // password
+      
+      if (username !== ADMIN_USERNAME) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      const isValidPassword = await bcrypt.compare(password, ADMIN_PASSWORD);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      const token = jwt.sign(
+        { username: ADMIN_USERNAME },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+      
+      res.json({ token, message: "Login successful" });
+    } catch (error) {
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
   // Blog endpoints
   app.get("/api/blog", async (req, res) => {
     try {
@@ -56,8 +108,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin routes
-  app.get("/api/admin/contacts", async (req, res) => {
+  // Admin routes (protected)
+  app.get("/api/admin/contacts", authenticateToken, async (req, res) => {
     try {
       const contacts = await storage.getContacts();
       res.json(contacts);
@@ -67,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Blog management
-  app.post("/api/admin/blog", async (req, res) => {
+  app.post("/api/admin/blog", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertBlogPostSchema.parse(req.body);
       const post = await storage.createBlogPost(validatedData);
@@ -80,7 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/blog/:id", async (req, res) => {
+  app.put("/api/admin/blog/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertBlogPostSchema.parse(req.body);
@@ -94,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/blog/:id", async (req, res) => {
+  app.delete("/api/admin/blog/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteBlogPost(id);
@@ -105,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Testimonials
-  app.get("/api/admin/testimonials", async (req, res) => {
+  app.get("/api/admin/testimonials", authenticateToken, async (req, res) => {
     try {
       const testimonials = await storage.getTestimonials();
       res.json(testimonials);
@@ -114,7 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/testimonials", async (req, res) => {
+  app.post("/api/admin/testimonials", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertTestimonialSchema.parse(req.body);
       const testimonial = await storage.createTestimonial(validatedData);
@@ -127,7 +179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/testimonials/:id", async (req, res) => {
+  app.put("/api/admin/testimonials/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertTestimonialSchema.parse(req.body);
@@ -138,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/testimonials/:id", async (req, res) => {
+  app.delete("/api/admin/testimonials/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteTestimonial(id);
@@ -149,7 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Workshop Packages
-  app.get("/api/admin/workshop-packages", async (req, res) => {
+  app.get("/api/admin/workshop-packages", authenticateToken, async (req, res) => {
     try {
       const packages = await storage.getWorkshopPackages();
       res.json(packages);
@@ -158,7 +210,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/workshop-packages", async (req, res) => {
+  app.post("/api/admin/workshop-packages", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertWorkshopPackageSchema.parse(req.body);
       const package_ = await storage.createWorkshopPackage(validatedData);
@@ -171,7 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/workshop-packages/:id", async (req, res) => {
+  app.put("/api/admin/workshop-packages/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertWorkshopPackageSchema.parse(req.body);
@@ -182,7 +234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/workshop-packages/:id", async (req, res) => {
+  app.delete("/api/admin/workshop-packages/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteWorkshopPackage(id);
@@ -193,7 +245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Team Members
-  app.get("/api/admin/team", async (req, res) => {
+  app.get("/api/admin/team", authenticateToken, async (req, res) => {
     try {
       const team = await storage.getTeamMembers();
       res.json(team);
@@ -202,7 +254,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/team", async (req, res) => {
+  app.post("/api/admin/team", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertTeamMemberSchema.parse(req.body);
       const member = await storage.createTeamMember(validatedData);
@@ -215,7 +267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/team/:id", async (req, res) => {
+  app.put("/api/admin/team/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertTeamMemberSchema.parse(req.body);
@@ -226,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/team/:id", async (req, res) => {
+  app.delete("/api/admin/team/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteTeamMember(id);
@@ -237,7 +289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Site Settings
-  app.get("/api/admin/settings", async (req, res) => {
+  app.get("/api/admin/settings", authenticateToken, async (req, res) => {
     try {
       const settings = await storage.getSiteSettings();
       res.json(settings);
@@ -246,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/settings", async (req, res) => {
+  app.post("/api/admin/settings", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertSiteSettingSchema.parse(req.body);
       const setting = await storage.setSiteSetting(validatedData);
@@ -260,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Promo Popups
-  app.get("/api/admin/promos", async (req, res) => {
+  app.get("/api/admin/promos", authenticateToken, async (req, res) => {
     try {
       const promos = await storage.getPromoPopups();
       res.json(promos);
@@ -269,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/promos", async (req, res) => {
+  app.post("/api/admin/promos", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertPromoPopupSchema.parse(req.body);
       const promo = await storage.createPromoPopup(validatedData);
@@ -282,7 +334,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/promos/:id", async (req, res) => {
+  app.put("/api/admin/promos/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertPromoPopupSchema.parse(req.body);
@@ -293,7 +345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/promos/:id", async (req, res) => {
+  app.delete("/api/admin/promos/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deletePromoPopup(id);
@@ -304,7 +356,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export Categories
-  app.get("/api/admin/export-categories", async (req, res) => {
+  app.get("/api/admin/export-categories", authenticateToken, async (req, res) => {
     try {
       const categories = await storage.getExportCategories();
       res.json(categories);
@@ -313,7 +365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/export-categories", async (req, res) => {
+  app.post("/api/admin/export-categories", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertExportCategorySchema.parse(req.body);
       const category = await storage.createExportCategory(validatedData);
@@ -326,7 +378,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/export-categories/:id", async (req, res) => {
+  app.put("/api/admin/export-categories/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertExportCategorySchema.parse(req.body);
@@ -337,7 +389,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/export-categories/:id", async (req, res) => {
+  app.delete("/api/admin/export-categories/:id", authenticateToken, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteExportCategory(id);
