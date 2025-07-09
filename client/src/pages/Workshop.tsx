@@ -12,7 +12,7 @@ export default function Workshop() {
   const { data: packages, isLoading } = useQuery({
     queryKey: ["/api/workshop-packages"],
     queryFn: async () => {
-      const response = await fetch("/api/workshop-packages");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/workshop-packages`);
       if (!response.ok) throw new Error("Failed to fetch packages");
       return response.json();
     },

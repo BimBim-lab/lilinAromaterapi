@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import type { WorkshopPackage } from "@shared/schema";
+const API = import.meta.env.VITE_API_URL;
 
 export default function SchedulePricing() {
   const { data: apiPackages, isLoading } = useQuery({
     queryKey: ["/api/workshop-packages"],
     queryFn: async () => {
-      const response = await fetch("/api/workshop-packages");
+      const response = await fetch("${API}/api/admin/workshop-packages");
       if (!response.ok) throw new Error("Failed to fetch packages");
       return response.json();
     },

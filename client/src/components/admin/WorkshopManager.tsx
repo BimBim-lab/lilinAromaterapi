@@ -30,7 +30,7 @@ import type { WorkshopPackage, InsertWorkshopPackage } from "@shared/schema";
 interface WorkshopManagerProps {
   token: string | null;
 }
-
+const API = import.meta.env.VITE_API_URL;
 export default function WorkshopManager({ token }: WorkshopManagerProps) {
   const [selectedPackage, setSelectedPackage] = useState<WorkshopPackage | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch("/api/admin/workshop-packages", {
+      const response = await fetch("${API}/api/admin/workshop-packages", {
         headers,
       });
       if (!response.ok) throw new Error("Failed to fetch packages");
@@ -60,7 +60,7 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch("/api/admin/workshop-packages", {
+      const response = await fetch("${API}/api/admin/workshop-packages", {
         method: "POST",
         headers,
         body: JSON.stringify(data),
@@ -83,7 +83,7 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch(`/api/admin/workshop-packages/${id}`, {
+      const response = await fetch(`${API}/api/admin/workshop-packages/${id}`, {
         method: "PUT",
         headers,
         body: JSON.stringify(data),
@@ -106,7 +106,7 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch(`/api/admin/workshop-packages/${id}`, {
+      const response = await fetch(`/${API}/api/admin/workshop-packages/${id}`, {
         method: "DELETE",
         headers,
       });
