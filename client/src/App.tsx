@@ -11,8 +11,8 @@ import BlogPost from "@/pages/BlogPost";
 import Contact from "@/pages/Contact";
 import Export from "@/pages/Export";
 import Admin from "@/pages/Admin";
+import WebsiteTest from "@/pages/WebsiteTest";
 import NotFound from "@/pages/not-found";
-import Layout from "@/components/Layout";
 
 function Router() {
   return (
@@ -26,6 +26,7 @@ function Router() {
         <Route path="/contact" component={Contact} />
         <Route path="/export" component={Export} />
         <Route path="/admin" component={Admin} />
+        <Route path="/website-test" component={WebsiteTest} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

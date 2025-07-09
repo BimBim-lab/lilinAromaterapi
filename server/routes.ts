@@ -61,6 +61,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public endpoints for website
+  app.get("/api/testimonials", async (req, res) => {
+    try {
+      const testimonials = await storage.getTestimonials();
+      res.json(testimonials);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch testimonials" });
+    }
+  });
+
+  app.get("/api/workshop-packages", async (req, res) => {
+    try {
+      const packages = await storage.getWorkshopPackages();
+      res.json(packages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch workshop packages" });
+    }
+  });
+
+  app.get("/api/team", async (req, res) => {
+    try {
+      const team = await storage.getTeamMembers();
+      res.json(team);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch team members" });
+    }
+  });
+
+  app.get("/api/export-categories", async (req, res) => {
+    try {
+      const categories = await storage.getExportCategories();
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch export categories" });
+    }
+  });
+
+  app.get("/api/settings", async (req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.get("/api/active-promos", async (req, res) => {
+    try {
+      const promos = await storage.getActivePromos();
+      res.json(promos);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch active promos" });
+    }
+  });
+
   // Blog endpoints
   app.get("/api/blog", async (req, res) => {
     try {
