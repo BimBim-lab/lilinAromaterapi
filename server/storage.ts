@@ -50,10 +50,13 @@ export class MemStorage implements IStorage {
     this.currentExportCategoryId = 1;
     this.currentPromoPopupId = 1;
 
-    // Initialize with sample blog posts
+    // Initialize with sample data
     this.initializeBlogPosts();
-    // Initialize with sample workshop packages
     this.initializeWorkshopPackages();
+    this.initializeTestimonials();
+    this.initializeTeamMembers();
+    this.initializeExportCategories();
+    this.initializeSiteSettings();
   }
 
   private initializeBlogPosts() {
@@ -219,6 +222,148 @@ export class MemStorage implements IStorage {
     ];
 
     samplePackages.forEach(pkg => this.createWorkshopPackage(pkg));
+  }
+
+  private initializeTestimonials() {
+    const sampleTestimonials = [
+      {
+        name: "Sari Dewi",
+        location: "Jakarta",
+        workshop: "Workshop Basic",
+        rating: 5,
+        content: "Workshop yang sangat bermanfaat! Saya jadi bisa membuat lilin aromaterapi sendiri di rumah. Instrukturnya sabar dan materinya lengkap.",
+        imageUrl: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+        featured: true,
+      },
+      {
+        name: "Budi Santoso",
+        location: "Bandung",
+        workshop: "Workshop Premium",
+        rating: 5,
+        content: "Setelah ikut workshop ini, saya jadi bisa memulai bisnis lilin aromaterapi. Sekarang sudah punya 20 pelanggan tetap!",
+        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+        featured: false,
+      },
+      {
+        name: "Maya Putri",
+        location: "Surabaya",
+        workshop: "Workshop Professional",
+        rating: 5,
+        content: "Sangat puas dengan workshop ini. Selain belajar teknik, juga dapat banyak tips bisnis. Recommended banget!",
+        imageUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100",
+        featured: true,
+      }
+    ];
+
+    sampleTestimonials.forEach(testimonial => this.createTestimonial(testimonial));
+  }
+
+  private initializeTeamMembers() {
+    const sampleTeam = [
+      {
+        name: "Sarah Wijaya",
+        position: "Founder & CEO",
+        bio: "Memiliki pengalaman 8 tahun di industri aromaterapi dan passionate dalam mengembangkan produk natural yang berkualitas.",
+        imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        socialMedia: JSON.stringify({
+          instagram: "@sarahwijaya_weiscandle",
+          linkedin: "linkedin.com/in/sarahwijaya"
+        }),
+        displayOrder: 1,
+        isActive: true,
+      },
+      {
+        name: "Michael Chen",
+        position: "Head of Production",
+        bio: "Expert dalam teknik pembuatan lilin dengan 6 tahun pengalaman. Bertanggung jawab memastikan kualitas produk tetap konsisten.",
+        imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        socialMedia: JSON.stringify({
+          instagram: "@michaelchen_wc",
+          email: "michael@weiscandle.com"
+        }),
+        displayOrder: 2,
+        isActive: true,
+      },
+      {
+        name: "Amanda Putri",
+        position: "Workshop Instructor",
+        bio: "Instruktur berpengalaman yang telah melatih lebih dari 500 peserta. Dikenal dengan pendekatan mengajar yang sabar dan detail.",
+        imageUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+        socialMedia: JSON.stringify({
+          instagram: "@amandaputri_teacher",
+          tiktok: "@amandawc"
+        }),
+        displayOrder: 3,
+        isActive: true,
+      }
+    ];
+
+    sampleTeam.forEach(member => this.createTeamMember(member));
+  }
+
+  private initializeExportCategories() {
+    const sampleCategories = [
+      {
+        name: "Premium Soy Candles",
+        description: "High-quality soy wax candles with essential oil blends, perfect for international markets.",
+        products: JSON.stringify([
+          "Lavender Relaxation Candles",
+          "Eucalyptus Fresh Candles",
+          "Vanilla Comfort Candles",
+          "Citrus Energizing Candles"
+        ]),
+        moq: "100 pieces per order",
+        priceRange: "$12 - $25 per piece",
+        imageUrl: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        displayOrder: 1,
+        isActive: true,
+      },
+      {
+        name: "Aromatherapy Gift Sets",
+        description: "Beautifully packaged candle gift sets with multiple scents and accessories.",
+        products: JSON.stringify([
+          "Relaxation Gift Set (3 candles + holder)",
+          "Spa Collection Set (4 candles + essential oil)",
+          "Travel Size Set (6 mini candles)",
+          "Wedding Favor Sets (customizable)"
+        ]),
+        moq: "50 sets per order",
+        priceRange: "$35 - $80 per set",
+        imageUrl: "https://images.unsplash.com/photo-1574361034536-9e0a5b05b6b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        displayOrder: 2,
+        isActive: true,
+      },
+      {
+        name: "Custom Corporate Candles",
+        description: "Personalized candles for corporate gifts and branding with custom packaging.",
+        products: JSON.stringify([
+          "Branded Logo Candles",
+          "Custom Scent Development",
+          "Corporate Gift Boxes",
+          "Event Commemorative Candles"
+        ]),
+        moq: "200 pieces per order",
+        priceRange: "$15 - $40 per piece",
+        imageUrl: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        displayOrder: 3,
+        isActive: true,
+      }
+    ];
+
+    sampleCategories.forEach(category => this.createExportCategory(category));
+  }
+
+  private initializeSiteSettings() {
+    const sampleSettings = [
+      { key: "site_title", value: "WeisCandle - Aromatherapy Workshop", type: "text" },
+      { key: "contact_email", value: "info@weiscandle.com", type: "text" },
+      { key: "contact_phone", value: "+62 812-3456-7890", type: "text" },
+      { key: "workshop_location", value: "Jakarta, Indonesia", type: "text" },
+      { key: "max_participants", value: "15", type: "number" },
+      { key: "booking_enabled", value: "true", type: "boolean" }
+    ];
+
+    sampleSettings.forEach(setting => this.setSiteSetting(setting));
   }
 
   async getUser(id: number): Promise<User | undefined> {

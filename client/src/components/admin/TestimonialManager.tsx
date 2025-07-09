@@ -47,18 +47,28 @@ export default function TestimonialManager({ token }: TestimonialManagerProps) {
   const { data: testimonials, isLoading } = useQuery({
     queryKey: ["/api/admin/testimonials"],
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
+      try {
+        // Try admin endpoint first
+        const headers: Record<string, string> = {};
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+        
+        const response = await fetch("/api/admin/testimonials", {
+          headers,
+        });
+        if (response.ok) {
+          return response.json();
+        }
+      } catch (error) {
+        console.warn("Admin endpoint failed, trying public endpoint");
       }
       
-      const response = await fetch("/api/admin/testimonials", {
-        headers,
-      });
-      if (!response.ok) throw new Error("Failed to fetch testimonials");
-      return response.json();
+      // Fallback to public endpoint
+      const publicResponse = await fetch("/api/testimonials");
+      if (!publicResponse.ok) throw new Error("Failed to fetch testimonials");
+      return publicResponse.json();
     },
-    enabled: !!token,
   });
 
   const createMutation = useMutation({

@@ -40,18 +40,28 @@ export default function TeamManager({ token }: TeamManagerProps) {
   const { data: team, isLoading } = useQuery({
     queryKey: ["/api/admin/team"],
     queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
+      try {
+        // Try admin endpoint first
+        const headers: Record<string, string> = {};
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+        
+        const response = await fetch("/api/admin/team", {
+          headers,
+        });
+        if (response.ok) {
+          return response.json();
+        }
+      } catch (error) {
+        console.warn("Admin endpoint failed, trying public endpoint");
       }
       
-      const response = await fetch("/api/admin/team", {
-        headers,
-      });
-      if (!response.ok) throw new Error("Failed to fetch team");
-      return response.json();
+      // Fallback to public endpoint
+      const publicResponse = await fetch("/api/team");
+      if (!publicResponse.ok) throw new Error("Failed to fetch team");
+      return publicResponse.json();
     },
-    enabled: !!token,
   });
 
   const createMutation = useMutation({
