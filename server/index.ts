@@ -5,14 +5,12 @@ import { storage } from "./storage";
 import cors from "cors";
 
 const app = express();
-
-// Allow all origins (atau batasi hanya vercel)
 app.use(cors({
-  origin: "https://lilin-aromaterapi.vercel.app",
-  credentials: true
+  origin: "https://lilin-aromaterapi.vercel.app", // hanya izinkan dari domain ini
+  credentials: true, // kalau frontend kirim cookie, token, dll
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
 
-const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
