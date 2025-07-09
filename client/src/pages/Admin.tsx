@@ -56,12 +56,7 @@ export default function Admin() {
     });
   };
 
-  // If not authenticated, show login form
-  if (!isAuthenticated) {
-    return <LoginForm onLogin={handleLogin} />;
-  }
-
-  // Fetch contacts with authentication
+  // Fetch contacts with authentication - always call hooks, but conditionally enable
   const { data: contacts, isLoading: contactsLoading } = useQuery({
     queryKey: ["/api/admin/contacts"],
     queryFn: async () => {
@@ -78,7 +73,13 @@ export default function Admin() {
       }
       return response.json();
     },
+    enabled: isAuthenticated && !!token, // Only run query when authenticated
   });
+
+  // If not authenticated, show login form
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={handleLogin} />;
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
