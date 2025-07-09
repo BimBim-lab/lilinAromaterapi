@@ -13,7 +13,6 @@ import BlogPost from "@/pages/BlogPost";
 import Export from "@/pages/Export";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
-import WebsiteTest from "@/pages/WebsiteTest";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,7 +37,6 @@ function App() {
               <Route path="/blog/:slug" component={BlogPost} />
               <Route path="/export" component={Export} />
               <Route path="/admin" component={Admin} />
-              <Route path="/test" component={WebsiteTest} />
               <Route component={NotFound} />
             </Switch>
           </Layout>
