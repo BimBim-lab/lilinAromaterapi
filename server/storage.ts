@@ -267,7 +267,7 @@ export class MemStorage implements IStorage {
     if (!existingPost) {
       throw new Error('Blog post not found');
     }
-    
+
     const updatedPost: BlogPost = {
       ...existingPost,
       ...insertPost,

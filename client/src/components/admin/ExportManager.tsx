@@ -40,10 +40,18 @@ export default function ExportManager({ token }: ExportManagerProps) {
   const { data: categories, isLoading } = useQuery({
     queryKey: ["/api/admin/export-categories"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/export-categories");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/admin/export-categories", {
+        headers,
+      });
       if (!response.ok) throw new Error("Failed to fetch categories");
       return response.json();
     },
+    enabled: !!token,
   });
 
   const createMutation = useMutation({

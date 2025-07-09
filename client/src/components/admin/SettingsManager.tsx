@@ -21,10 +21,18 @@ export default function SettingsManager({ token }: SettingsManagerProps) {
   const { data: settings, isLoading } = useQuery({
     queryKey: ["/api/admin/settings"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/settings");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/admin/settings", {
+        headers,
+      });
       if (!response.ok) throw new Error("Failed to fetch settings");
       return response.json();
     },
+    enabled: !!token,
   });
 
   const updateSettingMutation = useMutation({

@@ -40,10 +40,18 @@ export default function TeamManager({ token }: TeamManagerProps) {
   const { data: team, isLoading } = useQuery({
     queryKey: ["/api/admin/team"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/team");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/admin/team", {
+        headers,
+      });
       if (!response.ok) throw new Error("Failed to fetch team");
       return response.json();
     },
+    enabled: !!token,
   });
 
   const createMutation = useMutation({

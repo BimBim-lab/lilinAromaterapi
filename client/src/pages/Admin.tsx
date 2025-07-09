@@ -20,7 +20,6 @@ import WorkshopManager from "@/components/admin/WorkshopManager";
 import TestimonialManager from "@/components/admin/TestimonialManager";
 import TeamManager from "@/components/admin/TeamManager";
 import SettingsManager from "@/components/admin/SettingsManager";
-import PromoManager from "@/components/admin/PromoManager";
 import ExportManager from "@/components/admin/ExportManager";
 
 export default function Admin() {
@@ -110,14 +109,13 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="contacts" className="space-y-6">
-          <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full">
+          <TabsList className="grid grid-cols-4 lg:grid-cols-7 w-full">
             <TabsTrigger value="contacts">Kontak</TabsTrigger>
             <TabsTrigger value="blog">Blog</TabsTrigger>
             <TabsTrigger value="workshop">Workshop</TabsTrigger>
             <TabsTrigger value="testimonials">Testimoni</TabsTrigger>
             <TabsTrigger value="team">Tim</TabsTrigger>
             <TabsTrigger value="export">Export</TabsTrigger>
-            <TabsTrigger value="promos">Promo</TabsTrigger>
             <TabsTrigger value="settings">Setting</TabsTrigger>
           </TabsList>
 
@@ -181,10 +179,6 @@ export default function Admin() {
 
           <TabsContent value="export">
             <ExportManager token={token} />
-          </TabsContent>
-
-          <TabsContent value="promos">
-            <PromoManager token={token} />
           </TabsContent>
 
           <TabsContent value="settings">
