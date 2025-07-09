@@ -8,7 +8,7 @@ export default function WebsiteTest() {
   const { data: workshops, refetch: refetchWorkshops } = useQuery({
     queryKey: ["/api/workshop-packages"],
     queryFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/workshop-packages`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/workshop-packages`);
       if (!response.ok) throw new Error('Failed to fetch');
       return response.json();
     },

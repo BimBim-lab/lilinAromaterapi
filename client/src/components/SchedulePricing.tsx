@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import type { WorkshopPackage } from "@shared/schema";
-const API = import.meta.env.VITE_API_BASE_URL;
+const API = import.meta.env.VITE_API_URL;
 
 export default function SchedulePricing() {
   const { data: apiPackages, isLoading } = useQuery({
