@@ -9,7 +9,9 @@ app.use(cors({
   origin: "https://lilin-aromaterapi.vercel.app", // hanya izinkan dari domain ini
   credentials: true, // kalau frontend kirim cookie, token, dll
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  optionsSuccessStatus: 200,
 }));
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
