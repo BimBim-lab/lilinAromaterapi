@@ -10,6 +10,7 @@ import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
 import Contact from "@/pages/Contact";
 import Export from "@/pages/Export";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 import Layout from "@/components/Layout";
 
@@ -24,6 +25,7 @@ function Router() {
         <Route path="/blog/:slug" component={BlogPost} />
         <Route path="/contact" component={Contact} />
         <Route path="/export" component={Export} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
