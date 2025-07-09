@@ -159,7 +159,6 @@ export default function SchedulePricing() {
             })}
           </div>
         )}
-        </div>
       </div>
     </section>
   );
