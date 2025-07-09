@@ -48,9 +48,14 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertWorkshopPackage) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/admin/workshop-packages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create package");
@@ -66,9 +71,14 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InsertWorkshopPackage }) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/workshop-packages/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update package");
@@ -84,8 +94,14 @@ export default function WorkshopManager({ token }: WorkshopManagerProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/workshop-packages/${id}`, {
         method: "DELETE",
+        headers,
       });
       if (!response.ok) throw new Error("Failed to delete package");
       return response.json();

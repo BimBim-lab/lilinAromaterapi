@@ -48,9 +48,14 @@ export default function TeamManager({ token }: TeamManagerProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertTeamMember) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/admin/team", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create team member");
@@ -66,9 +71,14 @@ export default function TeamManager({ token }: TeamManagerProps) {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InsertTeamMember }) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/team/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update team member");
@@ -84,8 +94,14 @@ export default function TeamManager({ token }: TeamManagerProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/team/${id}`, {
         method: "DELETE",
+        headers,
       });
       if (!response.ok) throw new Error("Failed to delete team member");
       return response.json();

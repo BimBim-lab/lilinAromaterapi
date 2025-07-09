@@ -55,9 +55,14 @@ export default function TestimonialManager({ token }: TestimonialManagerProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertTestimonial) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/admin/testimonials", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create testimonial");
@@ -73,9 +78,14 @@ export default function TestimonialManager({ token }: TestimonialManagerProps) {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InsertTestimonial }) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/testimonials/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update testimonial");
@@ -91,8 +101,14 @@ export default function TestimonialManager({ token }: TestimonialManagerProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/admin/testimonials/${id}`, {
         method: "DELETE",
+        headers,
       });
       if (!response.ok) throw new Error("Failed to delete testimonial");
       return response.json();

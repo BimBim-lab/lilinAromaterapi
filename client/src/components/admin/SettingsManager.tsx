@@ -29,9 +29,14 @@ export default function SettingsManager({ token }: SettingsManagerProps) {
 
   const updateSettingMutation = useMutation({
     mutationFn: async (data: InsertSiteSetting) => {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/admin/settings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to update setting");

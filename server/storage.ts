@@ -16,17 +16,39 @@ export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private blogPosts: Map<number, BlogPost>;
   private contacts: Map<number, Contact>;
+  private workshopPackages: Map<number, any>;
+  private testimonials: Map<number, any>;
+  private teamMembers: Map<number, any>;
+  private exportCategories: Map<number, any>;
+  private promoPopups: Map<number, any>;
+  private siteSettings: Map<string, any>;
   private currentUserId: number;
   private currentBlogPostId: number;
   private currentContactId: number;
+  private currentWorkshopPackageId: number;
+  private currentTestimonialId: number;
+  private currentTeamMemberId: number;
+  private currentExportCategoryId: number;
+  private currentPromoPopupId: number;
 
   constructor() {
     this.users = new Map();
     this.blogPosts = new Map();
     this.contacts = new Map();
+    this.workshopPackages = new Map();
+    this.testimonials = new Map();
+    this.teamMembers = new Map();
+    this.exportCategories = new Map();
+    this.promoPopups = new Map();
+    this.siteSettings = new Map();
     this.currentUserId = 1;
     this.currentBlogPostId = 1;
     this.currentContactId = 1;
+    this.currentWorkshopPackageId = 1;
+    this.currentTestimonialId = 1;
+    this.currentTeamMemberId = 1;
+    this.currentExportCategoryId = 1;
+    this.currentPromoPopupId = 1;
 
     // Initialize with sample blog posts
     this.initializeBlogPosts();
@@ -239,95 +261,153 @@ export class MemStorage implements IStorage {
 
   // Methods for other entities that the admin dashboard needs
   async getTestimonials(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    return Array.from(this.testimonials.values());
   }
 
   async getWorkshopPackages(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    return Array.from(this.workshopPackages.values());
   }
 
   async getTeamMembers(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    return Array.from(this.teamMembers.values());
   }
 
   async getExportCategories(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    return Array.from(this.exportCategories.values());
   }
 
   async getSiteSettings(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    return Array.from(this.siteSettings.values());
   }
 
   async getPromoPopups(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    return Array.from(this.promoPopups.values());
   }
 
   async getActivePromos(): Promise<any[]> {
-    return []; // Empty for now, can be extended
+    const now = new Date();
+    return Array.from(this.promoPopups.values()).filter((promo: any) => {
+      if (!promo.isActive) return false;
+      if (promo.startDate && new Date(promo.startDate) > now) return false;
+      if (promo.endDate && new Date(promo.endDate) < now) return false;
+      return true;
+    });
   }
 
   async createTestimonial(data: any): Promise<any> {
-    return data; // Placeholder
+    const id = this.currentTestimonialId++;
+    const testimonial = { ...data, id, createdAt: new Date() };
+    this.testimonials.set(id, testimonial);
+    return testimonial;
   }
 
   async updateTestimonial(id: number, data: any): Promise<any> {
-    return data; // Placeholder
+    const existing = this.testimonials.get(id);
+    if (!existing) throw new Error('Testimonial not found');
+    const updated = { ...existing, ...data, id };
+    this.testimonials.set(id, updated);
+    return updated;
   }
 
   async deleteTestimonial(id: number): Promise<void> {
-    // Placeholder
+    if (!this.testimonials.has(id)) {
+      throw new Error('Testimonial not found');
+    }
+    this.testimonials.delete(id);
   }
 
   async createWorkshopPackage(data: any): Promise<any> {
-    return data; // Placeholder
+    const id = this.currentWorkshopPackageId++;
+    const package_ = { ...data, id };
+    this.workshopPackages.set(id, package_);
+    return package_;
   }
 
   async updateWorkshopPackage(id: number, data: any): Promise<any> {
-    return data; // Placeholder
+    const existing = this.workshopPackages.get(id);
+    if (!existing) throw new Error('Workshop package not found');
+    const updated = { ...existing, ...data, id };
+    this.workshopPackages.set(id, updated);
+    return updated;
   }
 
   async deleteWorkshopPackage(id: number): Promise<void> {
-    // Placeholder
+    if (!this.workshopPackages.has(id)) {
+      throw new Error('Workshop package not found');
+    }
+    this.workshopPackages.delete(id);
   }
 
   async createTeamMember(data: any): Promise<any> {
-    return data; // Placeholder
+    const id = this.currentTeamMemberId++;
+    const member = { ...data, id };
+    this.teamMembers.set(id, member);
+    return member;
   }
 
   async updateTeamMember(id: number, data: any): Promise<any> {
-    return data; // Placeholder
+    const existing = this.teamMembers.get(id);
+    if (!existing) throw new Error('Team member not found');
+    const updated = { ...existing, ...data, id };
+    this.teamMembers.set(id, updated);
+    return updated;
   }
 
   async deleteTeamMember(id: number): Promise<void> {
-    // Placeholder
+    if (!this.teamMembers.has(id)) {
+      throw new Error('Team member not found');
+    }
+    this.teamMembers.delete(id);
   }
 
   async setSiteSetting(data: any): Promise<any> {
-    return data; // Placeholder
+    const setting = { ...data, updatedAt: new Date() };
+    this.siteSettings.set(data.key, setting);
+    return setting;
   }
 
   async createPromoPopup(data: any): Promise<any> {
-    return data; // Placeholder
+    const id = this.currentPromoPopupId++;
+    const promo = { ...data, id, createdAt: new Date() };
+    this.promoPopups.set(id, promo);
+    return promo;
   }
 
   async updatePromoPopup(id: number, data: any): Promise<any> {
-    return data; // Placeholder
+    const existing = this.promoPopups.get(id);
+    if (!existing) throw new Error('Promo popup not found');
+    const updated = { ...existing, ...data, id };
+    this.promoPopups.set(id, updated);
+    return updated;
   }
 
   async deletePromoPopup(id: number): Promise<void> {
-    // Placeholder
+    if (!this.promoPopups.has(id)) {
+      throw new Error('Promo popup not found');
+    }
+    this.promoPopups.delete(id);
   }
 
   async createExportCategory(data: any): Promise<any> {
-    return data; // Placeholder
+    const id = this.currentExportCategoryId++;
+    const category = { ...data, id };
+    this.exportCategories.set(id, category);
+    return category;
   }
 
   async updateExportCategory(id: number, data: any): Promise<any> {
-    return data; // Placeholder
+    const existing = this.exportCategories.get(id);
+    if (!existing) throw new Error('Export category not found');
+    const updated = { ...existing, ...data, id };
+    this.exportCategories.set(id, updated);
+    return updated;
   }
 
   async deleteExportCategory(id: number): Promise<void> {
-    // Placeholder
+    if (!this.exportCategories.has(id)) {
+      throw new Error('Export category not found');
+    }
+    this.exportCategories.delete(id);
   }
 }
 
