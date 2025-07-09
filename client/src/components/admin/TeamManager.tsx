@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -23,49 +22,52 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import type { TeamMember, InsertTeamMember } from "@shared/schema";
+import { Edit, Trash2, Plus, User } from "lucide-react";
 
 interface TeamManagerProps {
   token: string | null;
 }
 
+interface TeamMember {
+  id: number;
+  name: string;
+  position: string;
+  bio: string;
+  imageUrl: string;
+  socialMedia?: string;
+  displayOrder: number;
+  isActive: boolean;
+}
+
 export default function TeamManager({ token }: TeamManagerProps) {
-  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { data: team, isLoading } = useQuery({
+  const { data: teamMembers, isLoading } = useQuery({
     queryKey: ["/api/admin/team"],
     queryFn: async () => {
-      try {
-        // Try admin endpoint first
-        const headers: Record<string, string> = {};
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-        
-        const response = await fetch("/api/admin/team", {
-          headers,
-        });
-        if (response.ok) {
-          return response.json();
-        }
-      } catch (error) {
-        console.warn("Admin endpoint failed, trying public endpoint");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
       }
       
-      // Fallback to public endpoint
-      const publicResponse = await fetch("/api/team");
-      if (!publicResponse.ok) throw new Error("Failed to fetch team");
-      return publicResponse.json();
+      const response = await fetch("/api/admin/team", {
+        headers,
+      });
+      if (!response.ok) throw new Error("Failed to fetch team members");
+      return response.json();
     },
+    enabled: !!token,
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: InsertTeamMember) => {
+    mutationFn: async (data: Omit<TeamMember, 'id'>) => {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) {
         headers.Authorization = `Bearer ${token}`;
@@ -81,14 +83,14 @@ export default function TeamManager({ token }: TeamManagerProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/team"] });
+      toast({ description: "Anggota tim berhasil ditambahkan!" });
       setIsDialogOpen(false);
-      setSelectedMember(null);
-      toast({ description: "Anggota tim berhasil dibuat!" });
+      resetForm();
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: InsertTeamMember }) => {
+    mutationFn: async ({ id, ...data }: Partial<TeamMember> & { id: number }) => {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) {
         headers.Authorization = `Bearer ${token}`;
@@ -104,9 +106,10 @@ export default function TeamManager({ token }: TeamManagerProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/team"] });
-      setIsDialogOpen(false);
-      setSelectedMember(null);
       toast({ description: "Anggota tim berhasil diupdate!" });
+      setIsDialogOpen(false);
+      setEditingMember(null);
+      resetForm();
     },
   });
 
@@ -122,7 +125,6 @@ export default function TeamManager({ token }: TeamManagerProps) {
         headers,
       });
       if (!response.ok) throw new Error("Failed to delete team member");
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/team"] });
@@ -130,101 +132,109 @@ export default function TeamManager({ token }: TeamManagerProps) {
     },
   });
 
+  const resetForm = () => {
+    setEditingMember(null);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
-    const socialMedia = formData.get("socialMedia") as string;
-    let socialMediaObj = null;
-    if (socialMedia.trim()) {
-      try {
-        socialMediaObj = JSON.parse(socialMedia);
-      } catch (error) {
-        toast({ 
-          description: "Format Social Media tidak valid. Gunakan format JSON.", 
-          variant: "destructive" 
-        });
-        return;
-      }
-    }
+    const socialMedia = {
+      instagram: formData.get("instagram") as string,
+      linkedin: formData.get("linkedin") as string,
+      email: formData.get("email") as string,
+    };
 
-    const data: InsertTeamMember = {
+    const memberData = {
       name: formData.get("name") as string,
       position: formData.get("position") as string,
       bio: formData.get("bio") as string,
       imageUrl: formData.get("imageUrl") as string,
-      socialMedia: socialMediaObj ? JSON.stringify(socialMediaObj) : null,
+      socialMedia: JSON.stringify(socialMedia),
       displayOrder: parseInt(formData.get("displayOrder") as string) || 0,
       isActive: formData.get("isActive") === "on",
     };
 
-    if (selectedMember) {
-      updateMutation.mutate({ id: selectedMember.id, data });
+    if (editingMember) {
+      updateMutation.mutate({ id: editingMember.id, ...memberData });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(memberData);
     }
   };
 
   const handleEdit = (member: TeamMember) => {
-    setSelectedMember(member);
+    setEditingMember(member);
     setIsDialogOpen(true);
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Yakin ingin menghapus anggota tim ini?")) {
+    if (confirm("Apakah Anda yakin ingin menghapus anggota tim ini?")) {
       deleteMutation.mutate(id);
     }
   };
 
+  const getSocialMedia = (socialMediaString?: string) => {
+    try {
+      return socialMediaString ? JSON.parse(socialMediaString) : {};
+    } catch {
+      return {};
+    }
+  };
+
+  if (isLoading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Team Manager</CardTitle>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Manajemen Tim</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button 
-              onClick={() => setSelectedMember(null)}
-              className="bg-rose-gold text-white hover:bg-charcoal"
-            >
-              Tambah Anggota
+            <Button onClick={() => setEditingMember(null)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Tambah Anggota Tim
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {selectedMember ? "Edit Anggota Tim" : "Tambah Anggota Tim"}
+                {editingMember ? "Edit Anggota Tim" : "Tambah Anggota Tim Baru"}
               </DialogTitle>
               <DialogDescription>
-                {selectedMember ? "Edit informasi anggota tim" : "Tambah anggota tim baru"}
+                {editingMember 
+                  ? "Edit informasi anggota tim" 
+                  : "Tambahkan anggota tim baru"
+                }
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="name">Nama</Label>
+                <Label htmlFor="name">Nama Lengkap</Label>
                 <Input 
                   id="name" 
                   name="name" 
+                  defaultValue={editingMember?.name || ""} 
                   required 
-                  defaultValue={selectedMember?.name || ""} 
                 />
               </div>
               <div>
-                <Label htmlFor="position">Posisi</Label>
+                <Label htmlFor="position">Posisi/Jabatan</Label>
                 <Input 
                   id="position" 
                   name="position" 
+                  defaultValue={editingMember?.position || ""} 
                   required 
-                  defaultValue={selectedMember?.position || ""} 
                 />
               </div>
               <div>
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio">Biografi</Label>
                 <Textarea 
                   id="bio" 
                   name="bio" 
+                  defaultValue={editingMember?.bio || ""} 
                   required 
-                  rows={4}
-                  defaultValue={selectedMember?.bio || ""} 
                 />
               </div>
               <div>
@@ -232,57 +242,74 @@ export default function TeamManager({ token }: TeamManagerProps) {
                 <Input 
                   id="imageUrl" 
                   name="imageUrl" 
-                  type="url" 
+                  type="url"
+                  defaultValue={editingMember?.imageUrl || ""} 
                   required 
-                  defaultValue={selectedMember?.imageUrl || ""} 
                 />
               </div>
               <div>
-                <Label htmlFor="socialMedia">Social Media (JSON format)</Label>
-                <Textarea 
-                  id="socialMedia" 
-                  name="socialMedia" 
-                  rows={3}
-                  placeholder='{"instagram": "@username", "linkedin": "linkedin.com/in/username"}'
-                  defaultValue={selectedMember?.socialMedia || ""} 
-                />
-              </div>
-              <div>
-                <Label htmlFor="displayOrder">Urutan Tampil</Label>
+                <Label htmlFor="displayOrder">Urutan Tampilan</Label>
                 <Input 
                   id="displayOrder" 
                   name="displayOrder" 
-                  type="number" 
-                  defaultValue={selectedMember?.displayOrder || 0} 
+                  type="number"
+                  defaultValue={editingMember?.displayOrder || 0} 
                 />
               </div>
+              
+              <div className="space-y-2">
+                <Label>Media Sosial (Opsional)</Label>
+                <div className="space-y-2">
+                  <Input 
+                    name="instagram" 
+                    placeholder="Username Instagram (tanpa @)"
+                    defaultValue={getSocialMedia(editingMember?.socialMedia)?.instagram || ""} 
+                  />
+                  <Input 
+                    name="linkedin" 
+                    placeholder="URL LinkedIn"
+                    defaultValue={getSocialMedia(editingMember?.socialMedia)?.linkedin || ""} 
+                  />
+                  <Input 
+                    name="email" 
+                    type="email"
+                    placeholder="Email"
+                    defaultValue={getSocialMedia(editingMember?.socialMedia)?.email || ""} 
+                  />
+                </div>
+              </div>
+              
               <div className="flex items-center space-x-2">
                 <Switch 
                   id="isActive" 
                   name="isActive" 
-                  defaultChecked={selectedMember?.isActive ?? true} 
+                  defaultChecked={editingMember?.isActive !== false} 
                 />
-                <Label htmlFor="isActive">Aktif</Label>
+                <Label htmlFor="isActive">Aktif (tampilkan di website)</Label>
               </div>
+              
               <Button 
                 type="submit" 
-                className="w-full bg-charcoal text-white hover:bg-rose-gold"
+                className="w-full"
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
-                {selectedMember ? "Update" : "Tambah"} Anggota
+                {editingMember ? "Update Anggota Tim" : "Tambah Anggota Tim"}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="text-center py-8">Loading...</div>
-        ) : (
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Daftar Anggota Tim ({teamMembers?.length || 0})</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Foto</TableHead>
                   <TableHead>Nama</TableHead>
                   <TableHead>Posisi</TableHead>
                   <TableHead>Bio</TableHead>
@@ -292,33 +319,43 @@ export default function TeamManager({ token }: TeamManagerProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {team?.map((member: TeamMember) => (
+                {teamMembers?.map((member: TeamMember) => (
                   <TableRow key={member.id}>
+                    <TableCell>
+                      <Avatar>
+                        <AvatarImage src={member.imageUrl} alt={member.name} />
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
                     <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell>{member.position}</TableCell>
-                    <TableCell className="max-w-xs truncate">{member.bio}</TableCell>
+                    <TableCell className="max-w-xs">
+                      <div className="truncate">{member.bio}</div>
+                    </TableCell>
                     <TableCell>{member.displayOrder}</TableCell>
                     <TableCell>
                       <Badge variant={member.isActive ? "default" : "secondary"}>
-                        {member.isActive ? "Aktif" : "Nonaktif"}
+                        {member.isActive ? "Aktif" : "Tidak Aktif"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
+                      <div className="flex items-center gap-2">
+                        <Button
                           variant="outline"
+                          size="sm"
                           onClick={() => handleEdit(member)}
                         >
-                          Edit
+                          <Edit className="h-4 w-4" />
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="destructive"
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleDelete(member.id)}
                           disabled={deleteMutation.isPending}
                         >
-                          Hapus
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -327,8 +364,8 @@ export default function TeamManager({ token }: TeamManagerProps) {
               </TableBody>
             </Table>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

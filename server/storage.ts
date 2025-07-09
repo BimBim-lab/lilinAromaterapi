@@ -8,8 +8,36 @@ export interface IStorage {
   getBlogPosts(): Promise<BlogPost[]>;
   getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
   createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: number, post: InsertBlogPost): Promise<BlogPost>;
+  deleteBlogPost(id: number): Promise<void>;
 
   createContact(contact: InsertContact): Promise<Contact>;
+  getContacts(): Promise<Contact[]>;
+
+  getTestimonials(): Promise<any[]>;
+  createTestimonial(data: any): Promise<any>;
+  updateTestimonial(id: number, data: any): Promise<any>;
+  deleteTestimonial(id: number): Promise<void>;
+
+  getWorkshopPackages(): Promise<any[]>;
+  createWorkshopPackage(data: any): Promise<any>;
+  updateWorkshopPackage(id: number, data: any): Promise<any>;
+  deleteWorkshopPackage(id: number): Promise<void>;
+
+  getTeamMembers(): Promise<any[]>;
+  createTeamMember(data: any): Promise<any>;
+  updateTeamMember(id: number, data: any): Promise<any>;
+  deleteTeamMember(id: number): Promise<void>;
+
+  getExportCategories(): Promise<any[]>;
+  createExportCategory(data: any): Promise<any>;
+  updateExportCategory(id: number, data: any): Promise<any>;
+  deleteExportCategory(id: number): Promise<void>;
+
+  getSiteSettings(): Promise<any[]>;
+  setSiteSetting(data: any): Promise<any>;
+
+  initializeDatabase(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
